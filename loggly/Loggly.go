@@ -1,8 +1,8 @@
 package loggly
 
 import (
-	"fmt"
 	"goUtils/networking"
+	"log"
 	"os"
 )
 
@@ -63,7 +63,7 @@ func TraceEcho(message interface{}) {
 // Will print out to the console what the log message is, as well as send it to loggly.
 func echoLog(tag string, message interface{}) {
 	sendOutLogMessage(tag, message)
-	fmt.Printf("Tag: %s\n %+v\n", tag, message)
+	log.Printf("Tag: %s\n %+v\n", tag, message)
 }
 
 // Abstracts the message sending to loggly.
@@ -73,13 +73,20 @@ func sendOutLogMessage(tag string, message interface{}) {
 
 		switch m := message.(type) {
 		case string:
-			networking.Post(url, string(m))
+			_, err := networking.Post(url, string(m))
+			handleError(err)
 		default:
-			networking.PostJson(url, message)
+			_, err := networking.PostJson(url, message)
+			handleError(err)
 		}
 	} else {
-		fmt.Println(`The "LOGGLY_API_KEY" env variable was not set.  Please set it.`)
-		os.Exit(1)
+		log.Fatal(`The "LOGGLY_API_KEY" env variable was not set.  Please set it.`)
+	}
+}
+
+func handleError(err error) {
+	if err != nil {
+		log.Println(err)
 	}
 }
 

@@ -3,7 +3,7 @@ package networking
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -11,10 +11,9 @@ import (
 )
 
 // Handles response and errors of HTTP requests.
-func handleResponse(response *http.Response, err error) [] byte {
+func handleResponse(response *http.Response, err error) ([] byte, error) {
 	if err != nil {
-		fmt.Println("The request could not be sent due to an error.")
-		return nil
+		return nil, err
 	} else {
 		defer response.Body.Close()
 
@@ -23,37 +22,33 @@ func handleResponse(response *http.Response, err error) [] byte {
 			body, err := ioutil.ReadAll(response.Body)
 
 			if err != nil {
-				fmt.Println("The message body could not be read due to an error.")
-				return nil
+				return nil, err
 			}
 
-			return body
+			return body, nil
 		} else {
-			fmt.Println("The response code was: " + strconv.Itoa(response.StatusCode) + ".  The response message is: " + response.Status)
+			return nil, errors.New("The response code is: " + strconv.Itoa(response.StatusCode) + ".  The response message is: " + response.Status)
 		}
 	}
-
-	return nil
 }
 
 // GET request.
-func Get(url string) [] byte {
+func Get(url string) ([] byte, error) {
 	return handleResponse(http.Get(url))
 }
 
 // POST request.
-func Post(url string, bodyData string) [] byte {
+func Post(url string, bodyData string) ([] byte, error) {
 	return handleResponse(http.Post(url, "text/plain", strings.NewReader(bodyData)))
 }
 
 // POST request.
-func PostJson(url string, jsonData interface{}) [] byte {
+func PostJson(url string, jsonData interface{}) ([] byte, error) {
 
 	marshaledJson, err := json.Marshal(jsonData)
 
 	if err != nil {
-		fmt.Println("JSON data could not be marshaled correctly.  JSON: " + jsonData.(string))
-		return nil
+		return nil, err
 	}
 
 	return handleResponse(http.Post(url, "text/json", bytes.NewBuffer(marshaledJson)))
