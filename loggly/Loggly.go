@@ -1,7 +1,7 @@
 package loggly
 
 import (
-	"goUtils/networking"
+	"github.com/landonp1203/goUtils/networking"
 	"log"
 	"os"
 )
