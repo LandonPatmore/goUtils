@@ -1,2 +1,2 @@
-# loggly
-This is a package that interfaces with the Loggly log service to allow users to send out messages.
+# goUtils
+This packages contains various small utils for the Go language.
