@@ -1,5 +1,8 @@
+// Package networking creates an interface to easily send both plain string messages
+// as well as Structs in POST.  Also allows for GET requests.
 package networking
 
+// Imports packages
 import (
 	"bytes"
 	"encoding/json"
@@ -10,7 +13,7 @@ import (
 	"time"
 )
 
-// Handles response and errors of HTTP requests.
+// Handles response and errors of HTTP requests
 func handleResponse(response *http.Response, err error) ([] byte, error) {
 	if err != nil {
 		return nil, err
@@ -32,17 +35,17 @@ func handleResponse(response *http.Response, err error) ([] byte, error) {
 	}
 }
 
-// GET request.
+// GET request
 func Get(url string) ([] byte, error) {
 	return handleResponse(createGetClient(url))
 }
 
-// POST request.
+// POST request
 func Post(url string, bodyData string) ([] byte, error) {
 	return handleResponse(createPostClient(url, "text/plain", []byte(bodyData)))
 }
 
-// POST request.
+// Json POST request
 func PostJson(url string, jsonData interface{}) ([] byte, error) {
 
 	marshaledJson, err := json.Marshal(jsonData)
@@ -54,6 +57,7 @@ func PostJson(url string, jsonData interface{}) ([] byte, error) {
 	return handleResponse(createPostClient(url, "application/json", marshaledJson))
 }
 
+// Creates a POST client
 func createPostClient(url string, contentType string, data [] byte) (*http.Response, error) {
 	httpClient := http.Client{Timeout: 10 * time.Second}
 	request, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
@@ -67,6 +71,7 @@ func createPostClient(url string, contentType string, data [] byte) (*http.Respo
 	return httpClient.Do(request)
 }
 
+// Creates a GET client
 func createGetClient(url string) (*http.Response, error) {
 	httpClient := http.Client{Timeout: 10 * time.Second}
 	request, err := http.NewRequest(http.MethodGet, url, nil)

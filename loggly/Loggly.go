@@ -1,5 +1,8 @@
+// Package loggly creates an interface to interact with the Loggly API
+// and to allow users to easily send messages to Loggly
 package loggly
 
+// Imports packages
 import (
 	"github.com/landonp1203/goUtils/networking"
 	"log"
@@ -10,63 +13,63 @@ const logglyURL string = "http://logs-01.loggly.com/inputs/"
 
 var logglyAPIKey, logglyAPIKeySet = os.LookupEnv("LOGGLY_API_KEY")
 
-// Error log.
+// Error log
 func Error(message interface{}) {
 	sendOutLogMessage("Error", message)
 }
 
-// Warn log.
+// Warn log
 func Warn(message interface{}) {
 	sendOutLogMessage("Warn", message)
 }
 
-// Debug log.
+// Debug log
 func Debug(message interface{}) {
 	sendOutLogMessage("Debug", message)
 }
 
-// Info log.
+// Info log
 func Info(message interface{}) {
 	sendOutLogMessage("Info", message)
 }
 
-// Trace log.
+// Trace log
 func Trace(message interface{}) {
 	sendOutLogMessage("Trace", message)
 }
 
-// Echo Error log.
+// Echo Error log
 func ErrorEcho(message interface{}) {
 	echoLog("Error", message)
 }
 
-// Echo Warn log.
+// Echo Warn log
 func WarnEcho(message interface{}) {
 	echoLog("Warn", message)
 }
 
-// Echo Debug log.
+// Echo Debug log
 func DebugEcho(message interface{}) {
 	echoLog("Debug", message)
 }
 
-// Echo Info log.
+// Echo Info log
 func InfoEcho(message interface{}) {
 	echoLog("Info", message)
 }
 
-// Echo Trace log.
+// Echo Trace log
 func TraceEcho(message interface{}) {
 	echoLog("Trace", message)
 }
 
-// Will print out to the console what the log message is, as well as send it to loggly.
+// Prints out to the console what the log message is, as well as send it to Loggly.
 func echoLog(tag string, message interface{}) {
 	sendOutLogMessage(tag, message)
 	log.Printf("Tag: %s\n %+v\n", tag, message)
 }
 
-// Abstracts the message sending to loggly.
+// Abstracts the message sending to Loggly.
 func sendOutLogMessage(tag string, message interface{}) {
 	if logglyAPIKeySet {
 		var url = buildURL(tag)
@@ -84,6 +87,7 @@ func sendOutLogMessage(tag string, message interface{}) {
 	}
 }
 
+// Handles errors that arise and prints them
 func handleError(err error) {
 	if err != nil {
 		log.Println(err)
