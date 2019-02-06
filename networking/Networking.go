@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"strings"
+	"time"
 )
 
 // Handles response and errors of HTTP requests.
@@ -34,12 +34,12 @@ func handleResponse(response *http.Response, err error) ([] byte, error) {
 
 // GET request.
 func Get(url string) ([] byte, error) {
-	return handleResponse(http.Get(url))
+	return handleResponse(createGetClient(url))
 }
 
 // POST request.
 func Post(url string, bodyData string) ([] byte, error) {
-	return handleResponse(http.Post(url, "text/plain", strings.NewReader(bodyData)))
+	return handleResponse(createPostClient(url, "text/plain", []byte(bodyData)))
 }
 
 // POST request.
@@ -51,5 +51,29 @@ func PostJson(url string, jsonData interface{}) ([] byte, error) {
 		return nil, err
 	}
 
-	return handleResponse(http.Post(url, "text/json", bytes.NewBuffer(marshaledJson)))
+	return handleResponse(createPostClient(url, "application/json", marshaledJson))
+}
+
+func createPostClient(url string, contentType string, data [] byte) (*http.Response, error) {
+	httpClient := http.Client{Timeout: 10 * time.Second}
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
+
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Content-Type", contentType)
+
+	return httpClient.Do(request)
+}
+
+func createGetClient(url string) (*http.Response, error) {
+	httpClient := http.Client{Timeout: 10 * time.Second}
+	request, err := http.NewRequest(http.MethodGet, url, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return httpClient.Do(request)
 }
