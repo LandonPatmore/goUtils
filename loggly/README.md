@@ -10,17 +10,17 @@ The "LOGGLY_API_KEY" env variable must be set, or this will not work
 There are multiple different types of log messages that can be sent, they are modeled after the log4j log messages:
 
 ```go
-func Error(message interface{})
-func Warn(message interface{})
-func Debug(message interface{})
-func Info(message interface{})
-func Trace(message interface{})
+func Error(message interface{}){}
+func Warn(message interface{}){}
+func Debug(message interface{}){}
+func Info(message interface{}){}
+func Trace(message interface{}){}
 
-func ErrorEcho(message interface{})
-func WarnEcho(message interface{})
-func DebugEcho(message interface{})
-func InfoEcho(message interface{})
-func TraceEcho(message interface{})
+func ErrorEcho(message interface{}){}
+func WarnEcho(message interface{}){}
+func DebugEcho(message interface{}){}
+func InfoEcho(message interface{}){}
+func TraceEcho(message interface{}){}
 ```
 
 Regular log functions just send the log message to Loggly.
