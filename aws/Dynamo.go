@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/landonp1203/goUtils/loggly"
-	"github.com/landonp1203/jobListingsWorker/types"
 )
 
 var dynamoClient = createDynamoClient()
@@ -50,7 +49,7 @@ func PutItem(table string, v interface{}) error {
 	return nil
 }
 
-func GetAllItems(table string) (items [] types.GithubJob, err error) {
+func GetAllItems(table string, v [] interface{}) (err error) {
 	params := &dynamodb.ScanInput{
 		TableName: aws.String(table),
 	}
@@ -59,18 +58,17 @@ func GetAllItems(table string) (items [] types.GithubJob, err error) {
 
 	if err != nil {
 		loggly.Error(err)
-		return nil, nil
+		return nil
 	}
 
-	var jobs [] types.GithubJob
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &jobs)
+	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &v)
 
 	if err != nil {
 		loggly.Error(err)
-		return nil, err
+		return err
 	}
 
-	return jobs, nil
+	return nil
 }
 
 func GetRowCount(table string) (count int64, err error) {
