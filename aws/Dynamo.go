@@ -6,7 +6,6 @@ import (
 	session2 "github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"goUtils/loggly"
 )
 
 // Creates a dynamo client
@@ -46,7 +45,7 @@ func PutItem(dynamoClient *dynamodb.DynamoDB, table string, v interface{}) error
 	return nil
 }
 
-func GetAllItems(dynamoClient *dynamodb.DynamoDB, table string, v [] interface{}) (err error) {
+func GetAllItems(dynamoClient *dynamodb.DynamoDB, table string, v interface{}) (err error) {
 	params := &dynamodb.ScanInput{
 		TableName: aws.String(table),
 	}
@@ -54,14 +53,12 @@ func GetAllItems(dynamoClient *dynamodb.DynamoDB, table string, v [] interface{}
 	result, err := dynamoClient.Scan(params)
 
 	if err != nil {
-		loggly.Error(err)
 		return nil
 	}
 
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &v)
 
 	if err != nil {
-		loggly.Error(err)
 		return err
 	}
 
@@ -76,7 +73,6 @@ func GetRowCount(dynamoClient *dynamodb.DynamoDB, table string) (count int64, er
 	result, err := dynamoClient.Scan(params)
 
 	if err != nil {
-		loggly.Error(err)
 		return 0, nil
 	}
 
