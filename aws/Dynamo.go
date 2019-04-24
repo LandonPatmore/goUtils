@@ -6,13 +6,11 @@ import (
 	session2 "github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/landonp1203/goUtils/loggly"
+	"goUtils/loggly"
 )
 
-var dynamoClient = createDynamoClient()
-
 // Creates a dynamo client
-func createDynamoClient() *dynamodb.DynamoDB {
+func CreateDynamoClient() (*dynamodb.DynamoDB, error) {
 	rKey := ReadAWSEnv()
 
 	session, err := session2.NewSession(&aws.Config{
@@ -21,17 +19,17 @@ func createDynamoClient() *dynamodb.DynamoDB {
 	})
 
 	if err != nil {
-		loggly.Error(err)
+		return nil, err
 	}
 
 	// Create DynamoDB client
 	client := dynamodb.New(session)
 
-	return client
+	return client, nil
 }
 
 // Takes items in, marshals them, and then sends them to the database
-func PutItem(table string, v interface{}) error {
+func PutItem(dynamoClient *dynamodb.DynamoDB, table string, v interface{}) error {
 	av, err := dynamodbattribute.MarshalMap(v)
 	input := &dynamodb.PutItemInput{
 		Item:      av,
@@ -41,7 +39,6 @@ func PutItem(table string, v interface{}) error {
 	_, err = dynamoClient.PutItem(input)
 
 	if err != nil {
-		loggly.Error(err)
 		return err
 	}
 
@@ -49,7 +46,7 @@ func PutItem(table string, v interface{}) error {
 	return nil
 }
 
-func GetAllItems(table string, v [] interface{}) (err error) {
+func GetAllItems(dynamoClient *dynamodb.DynamoDB, table string, v [] interface{}) (err error) {
 	params := &dynamodb.ScanInput{
 		TableName: aws.String(table),
 	}
@@ -71,7 +68,7 @@ func GetAllItems(table string, v [] interface{}) (err error) {
 	return nil
 }
 
-func GetRowCount(table string) (count int64, err error) {
+func GetRowCount(dynamoClient *dynamodb.DynamoDB, table string) (count int64, err error) {
 	params := &dynamodb.ScanInput{
 		TableName: aws.String(table),
 	}
