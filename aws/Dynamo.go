@@ -73,7 +73,7 @@ func GetRowCount(dynamoClient *dynamodb.DynamoDB, table string) (count int64, er
 	result, err := dynamoClient.Scan(params)
 
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	return *result.Count, nil
